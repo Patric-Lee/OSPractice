@@ -16,7 +16,8 @@
 
 * 调用install_ubuntu函数
 > * 加锁，防止进程意外退出造成问题
-> * 在参数cache和arch指定的路径下清除原有的/partial-$arch和/rootfs-$arch文件夹
+> * 在参数cache和arch指定的路径下清除原有的/partial-$arch和/rootfs-$arch文件夹，安装首先在前一个文件夹中进行，
+根文件系统制作的工作完成后才复制到后一个文件夹
 > * 检查有无cache存储的ubuntu文件，如果没有，调用download_ubuntu
 
 >>  * 配置镜像路径、语言、需要的package等参数
@@ -27,8 +28,9 @@
 >>  * 为容器选择代理（squid），用于加快下载
 >>  * 使用qemu-debootstrap命令和debootstrap命令安装根文件系统
 
->> * 在新建立的根文件系统中更改源列表并进行更新
-
+>> * 在新建立的该容器的根文件系统中更改源列表并进行更新
+>> * 挂载容器的根文件系统下的/proc，并使用lxc-unshare命令隔离它与宿主的文件系统
+>> * 把在/partial-$arch中建立好的根文件系统直接拷贝到/rootfs-$arch下
 
 
 
