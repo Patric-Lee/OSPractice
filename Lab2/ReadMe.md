@@ -62,6 +62,42 @@ lxc 2.0.9
 Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
 
 ### 实验步骤
+观察Ubuntu在目录/sys/fs/cgroup下的文件可以看到，文件memory.limit_in_bytes用于限制内存使用，因此我们加入如下代码：
+
+```
+ struct cgroup_controller *cgc_cpumem = cgroup_add_controller(cgroup, "memory");
+    if ( !cgc_cpumem) {
+	ret = ECGINVAL;
+	printf("Error add controller %s\n", cgroup_strerror(ret)); 
+	goto out;
+    }
+
+    if ( cgroup_add_value_uint64(cgc_cpumem, "memory.limit_in_bytes", 512*1024*1024)) {
+    	printf("Error limit cpumem memory.\n");
+	goto out;
+
+    }
+```
+
+内存测试的脚本如下（不断将字符串长度翻倍，这里为了便于观察，每次翻倍后休眠0.1秒）：
+
+
+利用free指令我们可以发现，在内存被耗光以后，进程暂时没有被杀死，swap分区的使用逐渐增加，
+增加到一定程度后就保持在一定数值不动。此时利用ps查看进程，发现它处于D状态，也就是休眠状态。
+
+但再经过一段时间，容器内会有如下的显示：
+
+此时进程已经退出。
+
+
+相应地，我们把cpuset.cpus的值改为“0”，即可达到限制CPU使用的结果。
+
+CPU压力测试的脚本如下（执行一段死循环）：
+
+利用top指令（键入“1”）我们可以看到确实只使用了一个CPU核：
+
+
+
 
 
 
