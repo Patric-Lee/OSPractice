@@ -80,15 +80,16 @@ Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
 ```
 
 内存测试的脚本如下（不断将字符串长度翻倍，这里为了便于观察，每次翻倍后休眠0.1秒）：
-
+![image](https://github.com/Patric-Lee/OSPractice/Lab2/pic/mem_test_sh.JPG)
 
 利用free指令我们可以发现，在内存被耗光以后，进程暂时没有被杀死，swap分区的使用逐渐增加，
 增加到一定程度后就保持在一定数值不动。此时利用ps查看进程，发现它处于D状态，也就是休眠状态。
 
 但再经过一段时间，容器内会有如下的显示：
+![image](https://github.com/Patric-Lee/OSPractice/Lab2/pic/mem_test_kill.JPG)
+此时进程已经退出（被杀死）。
 
-此时进程已经退出。
-
+如果我们希望限制swap分区的使用，可以修改memory.memsw.limit_in_bytes。
 
 相应地，我们把cpuset.cpus的值改为“0”，即可达到限制CPU使用的结果。
 
@@ -97,6 +98,21 @@ CPU压力测试的脚本如下（执行一段死循环）：
 利用top指令（键入“1”）我们可以看到确实只使用了一个CPU核：
 
 
+## 与LXC的对比
+fakeContainer中没有init等操作系统的基本进程，还不能模拟完整的操作系统。例如
+在fakeContainer中，我们是无法使用sudo的，否则会提示：
+> sudo: /usr/bin/sudo must be owned by uid 0 and have the setuid bit set.
+
+而在lxc中，我们可以使用sudo。这会影响我们对一些系统命令的使用。
+
+
+
+此外，从宿主访问fakeContainer的方法只有一种，而在lxc中，我们可以通过lxc-attach在容器内执行命令，或者是通过网络的方式进行通信。
+
+因此，要想改善该lab，我们可以尝试：
+完整模拟操作系统的启动过程，在运行了init等进程的基础上再运行shell；
+提供更多方便的交互方式，如实现lxc-attach命令；
+实现容器自己的网络栈，提供host与容器互相通信的方法。
 
 
 
