@@ -59,6 +59,11 @@ Ubuntu 16.04.2
 体系环境x86_64
 lxc 2.0.9
 
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/CPU_info.JPG)
+
+如图所示可知机器有两个单核逻辑CPU，也是两个物理CPU。
+
+
 Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
 
 ### 实验步骤
@@ -80,22 +85,35 @@ Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
 ```
 
 内存测试的脚本如下（不断将字符串长度翻倍，这里为了便于观察，每次翻倍后休眠0.1秒）：
-![image](https://github.com/Patric-Lee/OSPractice/Lab2/pic/mem_test_sh.JPG)
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_sh.JPG)
 
 利用free指令我们可以发现，在内存被耗光以后，进程暂时没有被杀死，swap分区的使用逐渐增加，
 增加到一定程度后就保持在一定数值不动。此时利用ps查看进程，发现它处于D状态，也就是休眠状态。
 
 但再经过一段时间，容器内会有如下的显示：
-![image](https://github.com/Patric-Lee/OSPractice/Lab2/pic/mem_test_kill.JPG)
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_kill.JPG)
+
 此时进程已经退出（被杀死）。
 
-如果我们希望限制swap分区的使用，可以修改memory.memsw.limit_in_bytes。
+
 
 相应地，我们把cpuset.cpus的值改为“0”，即可达到限制CPU使用的结果。
 
 CPU压力测试的脚本如下（执行一段死循环）：
 
-利用top指令（键入“1”）我们可以看到确实只使用了一个CPU核：
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/cpu_test_sh.JPG)
+
+利用top指令（键入“1”）我们可以看到确实只使用了一个CPU核。
+运行脚本前：
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/Before_cpu_test.JPG)
+
+运行脚本时：
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/cpu_test.JPG)
+
 
 
 ## 与LXC的对比
