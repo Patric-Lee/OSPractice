@@ -50,3 +50,18 @@
 > * 在容器内安装必要的软件包，设置时区
 
 * 调用finalize_user函数，将之前生成的SSH密钥与用户关联起来
+
+
+## fakeContainer实验
+### 实验环境
+Ubuntu 16.04.2
+内核版本为4.4.0-62-generic
+体系环境x86_64
+lxc 2.0.9
+
+Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
+
+### 实验步骤
+
+
+
