@@ -66,7 +66,7 @@ lxc 2.0.9
 
 Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
 
-### 实验步骤
+### 内存压力测试
 观察Ubuntu在目录/sys/fs/cgroup下的文件可以看到，文件memory.limit_in_bytes用于限制内存使用，因此我们加入如下代码：
 
 ```
@@ -84,21 +84,37 @@ Ubuntu对于cgroup的相关配置在目录/sys/fs/cgroup下。
     }
 ```
 
-内存测试的脚本如下（不断将字符串长度翻倍，这里为了便于观察，每次翻倍后休眠0.1秒）：
+内存测试的脚本如下（不断将字符串长度翻倍，这里为了便于观察，每次翻倍后休眠1秒）：
 
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_sh.JPG)
 
 利用free指令我们可以发现，在内存被耗光以后，进程暂时没有被杀死，swap分区的使用逐渐增加，
-增加到一定程度后就保持在一定数值不动。此时利用ps查看进程，发现它处于D状态，也就是休眠状态。
+增加到一定程度后就保持在一定数值不动。
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_res_1.JPG)
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_res_2.JPG)
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_res_4.JPG)
+
+
+
+此时利用ps查看进程，发现它处于D状态，也就是休眠状态。
+
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/process_state.JPG)
+
 
 但再经过一段时间，容器内会有如下的显示：
 
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/mem_test_kill.JPG)
 
-此时进程已经退出（被杀死）。
+此时进程已经退出。
+
+但如果我们使用swapoff命令关闭swap分区，进程内存超出限额后马上会被杀死：
 
 
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab2/pic/swap_off_res.JPG)
 
+
+### CPU压力测试
 相应地，我们把cpuset.cpus的值改为“0”，即可达到限制CPU使用的结果。
 
 CPU压力测试的脚本如下（执行一段死循环）：
