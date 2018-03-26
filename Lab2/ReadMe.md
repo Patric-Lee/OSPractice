@@ -39,9 +39,14 @@
 >> 这里对btrfs文件系统做了单独的处理
 
 * 调用configure_ubuntu函数
+> * 利用dhcp配置网络
+> * 设置用户、密码、语言、所在地
+> * 生成新的SSH密钥
 
-* 调用copy_configuration函数
+* 调用copy_configuration函数，主要是进行配置文件中路径的重定位以及添加该容器的特定配置
 
 * 调用post_process函数
+> * 处理体系结构与宿主机相同以及不同的情况
+> * 在容器内安装必要的软件包，设置时区
 
-* 调用finalize_user函数
+* 调用finalize_user函数，将之前生成的SSH密钥与用户关联起来
