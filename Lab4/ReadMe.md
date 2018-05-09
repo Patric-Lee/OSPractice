@@ -75,22 +75,23 @@ VXLAN相当于扩展了的VLAN技术，但它主要目的是把三层网络连�
 更改$home/.local/share/lxc/[容器名]/config文件，增加两行指定网关和ip地址，更改一行指定联网设备为ovs桥。
 
 例如，first容器的配置文件修改如下：
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/network_config.JPG)
 
 second容器配置文件修改如下：
-
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/second_net_config.JPG)
 
 然后运行脚本创建容器：
 > lxc-create -n first -t download
 > lxc-create -n second -t download
 
 创建ovs的桥brv并启动：
-'''
+```
 sudo ovs-vsctl add-br brv
 sudo ip link set brv up
 
-'''
+```
 接下来开启两个端口，保证host与容器能够互ping:
-'''
+```
 sudo ovs-vsctl add-port brv firstport -- set interface firstport type=internal
 sudo ovs-vsctl add-port brv secondport -- set interface secondport type=internal
 sudo ip addr add 10.20.3.88/24 dev firstport
@@ -98,20 +99,23 @@ sudo ip addr add 10.20.2.88/24 dev secondport
 sudo ip link set firstport up
 sudo ip link set secondport up
 
-'''
+```
 
 这之后才能启动容器，否则容器与主机无法ping通：
-'''
+```
 lxc-start -n first
 lxc-start -n second
-'''
+```
 
 此时，键入这个命令可以看到目前的网络状态：
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/ovs_show.JPG)
+
 
 类似地，我们也在服务器148上创建桥、容器another：
 
 由于我们还没有为端口分配tag，因此first与second可以互相ping。但一旦为它们分配了tag，两者就不再能够互相ping通。我们给anotherport和firstport
 分配tag为1，给secondport分配tag为2,可以看到first仍能ping通another，而second不能了。
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/different_vlan.JPG)
 
 ### 流量限制
 
