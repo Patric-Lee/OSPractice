@@ -75,9 +75,11 @@ VXLAN相当于扩展了的VLAN技术，但它主要目的是把三层网络连�
 更改$home/.local/share/lxc/[容器名]/config文件，增加两行指定网关和ip地址，更改一行指定联网设备为ovs桥。
 
 例如，first容器的配置文件修改如下：
+
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/network_config.JPG)
 
 second容器配置文件修改如下：
+
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/second_net_config.JPG)
 
 然后运行脚本创建容器：
@@ -91,6 +93,7 @@ sudo ip link set brv up
 
 ```
 接下来开启两个端口，保证host与容器能够互ping:
+
 ```
 sudo ovs-vsctl add-port brv firstport -- set interface firstport type=internal
 sudo ovs-vsctl add-port brv secondport -- set interface secondport type=internal
@@ -102,12 +105,14 @@ sudo ip link set secondport up
 ```
 
 这之后才能启动容器，否则容器与主机无法ping通：
+
 ```
 lxc-start -n first
 lxc-start -n second
 ```
 
 此时，键入这个命令可以看到目前的网络状态：
+
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/ovs_show.JPG)
 
 
@@ -115,11 +120,32 @@ lxc-start -n second
 
 由于我们还没有为端口分配tag，因此first与second可以互相ping。但一旦为它们分配了tag，两者就不再能够互相ping通。我们给anotherport和firstport
 分配tag为1，给secondport分配tag为2,可以看到first仍能ping通another，而second不能了。
+
 ![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/different_vlan.JPG)
 
 ### 流量限制
+QoS可以帮助我们更好地控制网络中的流量。较为简单的方法是设置字段：
+> sudo ovs-vsctl set interface firstport ingress_policing_rate=1000000
+> #sudo ovs-vsctl set interface eth1 ingress_policing_burst=0
 
+其中前者限制的是firstport接口的最大接收数据包的速率（kbit/s），后者限制的是最大突发流量的大小(kb)。
 
+注意：为了是容器内部能够访问外网，需要修改容器的DNS服务器设置
+> echo 'nameserver 162.105.175.10' >> /etc/resolv.conf
 
+然后我们可以使用iperf来观察流量情况。其中，host运行iperf服务器端：
+> iperf -s
+
+容器内运行iperf客户端:
+> iperf -c 162.105.175.56 -d -i 2
+限制流量前：
+
+![image]()
+
+限制流量后：
+
+![image]()
+
+可以看到上行的速率降到了比限制还要小很多的范围。但是有趣的是，下行的速率没有受到影响。原因有待探究。
 
 
