@@ -33,9 +33,64 @@ C的MAC地址时，所有的设备由于都在同一个广播域中，因此都�
 
 我们分别来看如何实现这两点。
 
-###划分VLAN
+### 划分VLAN
 
 
 
 
 ### VLAN隔离的限制
+
+## 实验
+### 实验环境
+安装有lxc的2.0.9版本的Ubuntu，内核4.4.0-62-generic
+
+通过如下命令安装了openvswitch：
+> sudo apt-get install openvswitch-switch
+
+### 构建隔离的lxc容器集群
+实验在两台服务器上共同完成：162.105.175.56和162.105.175.148.下面简称为服务器56和服务器148.
+
+在服务器56上创建两个容器first和second。首先要更改lxc的配置：
+
+更改$home/.local/share/lxc/[容器名]/config文件，增加两行指定网关和ip地址，更改一行指定联网设备为ovs桥。
+
+例如，first容器的配置文件修改如下：
+
+second容器配置文件修改如下：
+
+
+然后运行脚本创建容器：
+> lxc-create -n first -t download
+> lxc-create -n second -t download
+
+创建ovs的桥brv并启动：
+'''
+sudo ovs-vsctl add-br brv
+sudo ip link set brv up
+
+'''
+接下来开启两个端口，保证host与容器能够互ping:
+'''
+sudo ovs-vsctl add-port brv firstport -- set interface firstport type=internal
+sudo ovs-vsctl add-port brv secondport -- set interface secondport type=internal
+sudo ip addr add 10.20.3.88/24 dev firstport
+sudo ip addr add 10.20.2.88/24 dev secondport
+sudo ip link set firstport up
+sudo ip link set secondport up
+
+'''
+
+这之后才能启动容器，否则容器与主机无法ping通：
+'''
+lxc-start -n first
+lxc-start -n second
+'''
+
+此时，键入这个命令可以看到目前的网络状态：
+
+由于我们还没有为端口分配tag，因此first与second可以互相ping。但一旦为它们分配了tag，两者就不再能够互相ping通。
+
+
+
+
+
