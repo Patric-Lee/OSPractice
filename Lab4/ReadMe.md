@@ -140,11 +140,11 @@ QoS可以帮助我们更好地控制网络中的流量。较为简单的方法�
 > iperf -c 162.105.175.56 -d -i 2
 限制流量前：
 
-![image]()
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/original_speed.JPG)
 
 限制流量后：
 
-![image]()
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab4/image/limit_up.JPG)
 
 可以看到上行的速率降到了比限制还要小很多的范围。但是有趣的是，下行的速率没有受到影响。原因有待探究。
 
