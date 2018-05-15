@@ -99,3 +99,53 @@ AUFS是一种联合文件系统，能够完成保持几个文件目录物理上�
 ## 配置GlusterFS
 
 ## 为LXC提供镜像服务
+
+我们首先创建并启动两个容器：
+```
+lxc-create -n base -t download
+lxc-create -n withPython -t download
+lxc-start -n base
+lxc-start -n withPython
+```
+
+其中选择Ubuntu trusty版本，体系结构为i386.这样启动的容器中是没有Python的。为了测试，我们在withPython中安装Python。
+
+接下来，找到两个容器各自的rootfs分别为
+```
+$dir1=~/.local/share/lxc/base/rootfs
+$dir2=~/.local/share/lxc/withPython/rootfs
+```
+
+使用aufs合并两个rootfs到test文件夹中，base作为可写branch：
+```
+sudo mount -t aufs -o dirs=$dir1:$dir2 none /home/pkusei/test
+```
+
+接下来我们创建一个新容器test，并修改它的config文件中lxc.rootfs一行为：
+```
+lxc.rootfs = /home/pkusei/test
+```
+
+启动test容器，会发现可以在test中运行Python：
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
