@@ -97,6 +97,17 @@ AUFS是一种联合文件系统，能够完成保持几个文件目录物理上�
 同名文件仍然存在。
 
 ## 配置GlusterFS
+首先在两台服务器上分别安装GlusterFS server:
+> sudo apt-get install glusterfs-server
+
+创建相应的文件夹作为存储点，我们这里直接在$home下创建了/glus文件夹。
+随后在一台服务器上运行，这里我选择了148服务器：
+```
+sudo gluster peer probe 162.105.175.56
+sudo gluster volume create rep replica 2 162.105.175.56:/home/pkusei/glus 162.105.175.74:/home/pkusei/glus force
+sudo gluster volume start rep
+```
+我们可以查看到glusterfs的状态：
 
 ## 为LXC提供镜像服务
 
