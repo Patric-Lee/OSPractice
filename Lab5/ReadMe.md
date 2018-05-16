@@ -108,6 +108,25 @@ sudo gluster volume create rep replica 2 162.105.175.56:/home/pkusei/glus 162.10
 sudo gluster volume start rep
 ```
 我们可以查看到glusterfs的状态：
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab5/image/peer_probed.JPG)
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab5/image/volume_created.JPG)
+
+随后我们启动一台privileged container（否则无法mknod）.我们首先在其中创建fuse设备：
+> mknod /dev/fuse c 10 229
+
+然后安装gluster-client:
+> sudo apt-get install glusterfs-client
+
+注意，这里要保证client和server的版本相同。
+
+然后我们就可以把rep挂载到容器中了：
+>  sudo mount -t glusterfs 162.105.175.148:rep /home/ubuntu/data/
+
+在容器内部向data文件夹写入文件。同时可以发现rep中也可以看到：
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab5/image/mount_finished.JPG)
+
+破坏一台服务器的数据，从容器内部也仍然能看到完好的文件。
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab5/image/break_one_machine.JPG)
 
 ## 为LXC提供镜像服务
 
@@ -139,7 +158,7 @@ lxc.rootfs = /home/pkusei/test
 
 启动test容器，会发现可以在test中运行Python：
 
-
+![image](https://github.com/Patric-Lee/OSPractice/blob/master/Lab5/image/testAUFS.JPG)
 
 
 
