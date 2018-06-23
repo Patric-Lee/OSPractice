@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title> Create a new task </title>
+</head>
+
+
+<body>
+<form method="POST">
+Task name:<br>
+<input type="text" name="name" required><br>
+Command:<br>
+<input type="text" name="command"><br>
+Package path:<br>
+<input type="text" name="packagePath"><br>
+CPU limits:<br>
+<input type="number" name="cpu"><br>
+Memory limits (in MBs):<br>
+<input type="number" name="memory"><br>
+Input:
+Retry times:
+<input type="number" name="maxRetryCount"><br>
+Timeout (in seconds):
+<input type="number" name="timeout"><br>
+Image:
+<br>
+Distribution:
+<input type="text" name="dist"><br>
+
+Release:
+<input type="text" name="release"><br>
+
+Architecture:
+<input type="text" name="arch"><br>
+<input type="submit" value="Create a task!">
+
+</form>
+</body>
+</html>
